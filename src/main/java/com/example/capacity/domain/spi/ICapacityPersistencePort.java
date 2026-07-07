@@ -5,5 +5,4 @@ import reactor.core.publisher.Mono;
 
 public interface ICapacityPersistencePort {
     Mono<Capacity> save(Capacity capacity);
-    Mono<Boolean> existsByName(String name);
 }
