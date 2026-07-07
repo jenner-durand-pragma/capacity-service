@@ -15,6 +15,14 @@ public class CapacityUseCase implements ICapacityServicePort {
 
     @Override
     public Mono<Capacity> createCapacity(Capacity capacity) {
-        return Mono.empty();
+        return Mono.just(capacity)
+                .doOnNext(Capacity::checkTechnologiesNotRepeated)
+                .doOnNext(Capacity::checkMaxTechnologiesAssociated)
+                .doOnNext(Capacity::checkMinTechnologiesAssociated)
+                .flatMap(capacityPersistencePort::save)
+                .flatMap(c -> technologyPersistencePort
+                        .assignTechnologiesToCapacity(c)
+                        .thenReturn(c)
+                );
     }
 }
