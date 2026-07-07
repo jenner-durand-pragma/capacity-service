@@ -2,6 +2,7 @@ package com.example.capacity.application.config;
 
 import com.example.capacity.domain.api.ICapacityServicePort;
 import com.example.capacity.domain.spi.ICapacityPersistencePort;
+import com.example.capacity.domain.spi.ITechnologyExternalPort;
 import com.example.capacity.domain.usecase.CapacityUseCase;
 import com.example.capacity.infrastructure.adapters.persistenceadapter.CapacityPersistenceAdapter;
 import com.example.capacity.infrastructure.adapters.persistenceadapter.mapper.ICapacityEntityMapper;
@@ -16,6 +17,7 @@ public class UseCasesConfig {
 
         private final ICapacityEntityRepository capacityEntityRepository;
         private final ICapacityEntityMapper capacityEntityMapper;
+        private final ITechnologyExternalPort technologyExternalPort;
 
         @Bean
         public ICapacityPersistencePort capacityPersistencePort() {
@@ -29,6 +31,6 @@ public class UseCasesConfig {
         public ICapacityServicePort capacityServicePort(
                 ICapacityPersistencePort capacityPersistencePort
         ) {
-                return new CapacityUseCase(capacityPersistencePort);
+                return new CapacityUseCase(capacityPersistencePort, technologyExternalPort);
         }
 }
