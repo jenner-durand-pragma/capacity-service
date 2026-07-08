@@ -20,13 +20,14 @@ public class CapacityUseCase implements ICapacityServicePort {
                 .doOnNext(Capacity::checkMaxTechnologiesAssociated)
                 .doOnNext(Capacity::checkMinTechnologiesAssociated)
                 .flatMap(capacityPersistencePort::save)
-                .flatMap(c -> technologyPersistencePort
-                        .assignTechnologiesToCapacity(c)
-                        .thenReturn(c)
-                ).map(c -> {
+                .map(c -> {
                     c.setTechnologyIds(capacity.getTechnologyIds());
 
                     return c;
-                });
+                })
+                .flatMap(c -> technologyPersistencePort
+                        .assignTechnologiesToCapacity(c)
+                        .thenReturn(c)
+                );
     }
 }
