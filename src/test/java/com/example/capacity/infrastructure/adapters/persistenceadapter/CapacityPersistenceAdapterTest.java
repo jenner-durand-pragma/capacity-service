@@ -6,8 +6,6 @@ import com.example.capacity.infrastructure.adapters.persistenceadapter.repositor
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +33,8 @@ class CapacityPersistenceAdapterTest {
         );
 
         capacity = Capacity.builder()
-                .name("Spring Boot")
-                .description("It's a Java framework")
+                .name("Backend developer")
+                .description("It's a good capacity")
                 .build();
 
         capacityEntityRepository.deleteAll().block();
@@ -49,20 +47,6 @@ class CapacityPersistenceAdapterTest {
                 .expectNextMatches(capacityResult ->
                         capacityResult.getId() != null
                                 && capacityResult.getName().equals(capacity.getName()))
-                .verifyComplete();
-    }
-
-    @ParameterizedTest(
-            name = "Should return the boolean value if capacity name exists or doesn't exists"
-    )
-    @ValueSource(booleans = {true, false})
-    void shouldReturnBooleanValueIfCapacityExistsOrDoesntExists_ExistsByName(Boolean value) {
-        var name = Boolean.TRUE.equals(value) ? capacity.getName() : "Another value";
-
-        capacityEntityRepository.save(capacityEntityMapper.toEntity(capacity)).block();
-
-        StepVerifier.create(capacityPersistenceAdapter.existsByName(name))
-                .expectNext(value)
                 .verifyComplete();
     }
 }

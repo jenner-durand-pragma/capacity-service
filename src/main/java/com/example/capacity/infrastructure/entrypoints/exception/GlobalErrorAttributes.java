@@ -88,6 +88,16 @@ public class GlobalErrorAttributes extends DefaultErrorAttributes {
                     fe.getClass().getSimpleName(),
                     fe.getMessage()
             );
+        } else if (error instanceof NotFoundException nfe) {
+            errorMessage = nfe.getMessage();
+
+            log.warn("[{}] Not Found Exception {} {} {}: {}",
+                    request.exchange().getRequest().getId(),
+                    request.method().name(),
+                    request.path(),
+                    nfe.getClass().getSimpleName(),
+                    nfe.getMessage()
+            );
         } else {
             log.error("[{}] Excepción no controlada {} {}: {}",
                     request.exchange().getRequest().getId(),

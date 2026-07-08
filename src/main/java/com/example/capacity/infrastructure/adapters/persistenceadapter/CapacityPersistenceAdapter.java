@@ -20,10 +20,4 @@ public class CapacityPersistenceAdapter implements ICapacityPersistencePort {
                 .flatMap(capacityEntityRepository::save)
                 .map(capacityEntityMapper::toModel);
     }
-
-    @Override
-    public Mono<Boolean> existsByName(String name) {
-        return Mono.just(name)
-                .flatMap(capacityEntityRepository::existsByName);
-    }
 }

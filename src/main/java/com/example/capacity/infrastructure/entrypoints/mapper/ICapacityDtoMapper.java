@@ -1,8 +1,8 @@
 package com.example.capacity.infrastructure.entrypoints.mapper;
 
 import com.example.capacity.domain.model.Capacity;
-import com.example.capacity.infrastructure.entrypoints.dto.capacity.CreateCapacityDto;
 import com.example.capacity.infrastructure.entrypoints.dto.capacity.CapacityDto;
+import com.example.capacity.infrastructure.entrypoints.dto.capacity.CreateCapacityDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

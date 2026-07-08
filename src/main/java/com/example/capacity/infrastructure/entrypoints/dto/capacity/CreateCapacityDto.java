@@ -1,25 +1,22 @@
 package com.example.capacity.infrastructure.entrypoints.dto.capacity;
 
-import com.example.capacity.domain.model.Capacity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
 
 @Schema(description = "Necessary fields to create a new capacity")
 public record CreateCapacityDto(
-        @Schema(description = "Name of the capacity", example = "Spring boot")
+        @Schema(description = "Name of the capacity", example = "Backend Developer")
         @NotBlank(message = "Name must have value")
-        @Size(
-                max = 50,
-                message = "Name must be lower or equals than {max} characters"
-        )
         String name,
 
-        @Schema(description = "Description of the capacity", example = "It's a Java framework")
+        @Schema(description = "Description of the capacity", example = "It's a good capacity")
         @NotBlank(message = "Description must have value")
-        @Size(
-                max = 90,
-                message = "Description must be lower or equals than {max} characters"
-        )
-        String description
+        String description,
+
+        @Schema(description = "Ids of technologies to associate")
+        @NotEmpty(message = "Technology ids cannot be empty")
+        List<Long> technologyIds
 ) { }
