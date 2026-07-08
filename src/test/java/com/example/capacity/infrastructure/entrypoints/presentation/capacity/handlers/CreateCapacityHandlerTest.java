@@ -20,6 +20,8 @@ import org.springframework.web.reactive.function.server.EntityResponse;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -50,8 +52,9 @@ class CreateCapacityHandlerTest {
         );
 
         createCapacityDto = new CreateCapacityDto(
-                "Spring boot",
-                "It's a Java framework"
+                "Backend developer",
+                "It's a good capacity",
+                List.of(1L, 2L, 3L)
         );
     }
 
@@ -62,6 +65,7 @@ class CreateCapacityHandlerTest {
         var capacity = Capacity.builder()
                 .name(createCapacityDto.name())
                 .description(createCapacityDto.description())
+                .technologyIds(List.of(1L, 2L, 3L))
                 .build();
 
         when(dtoValidator.validate(any(CreateCapacityDto.class)))
@@ -88,8 +92,8 @@ class CreateCapacityHandlerTest {
 
                     assertThat(capacityDto)
                             .isNotNull()
-                            .extracting(CapacityDto::id, CapacityDto::name, CapacityDto::description)
-                            .containsExactly(capacityId, capacity.getName(), capacity.getDescription());
+                            .extracting(CapacityDto::id, CapacityDto::name, CapacityDto::description, dto -> dto.technologyIds().size())
+                            .containsExactly(capacityId, capacity.getName(), capacity.getDescription(), capacity.getTechnologyIds().size());
                 })
                 .verifyComplete();
 
@@ -100,8 +104,8 @@ class CreateCapacityHandlerTest {
 
         assertThat(capacityCaptured)
                 .isNotNull()
-                .extracting(Capacity::getId, Capacity::getName, Capacity::getDescription)
-                .containsExactly(capacityId, capacity.getName(), capacity.getDescription());
+                .extracting(Capacity::getId, Capacity::getName, Capacity::getDescription, capacityInput -> capacityInput.getTechnologyIds().size())
+                .containsExactly(capacityId, capacity.getName(), capacity.getDescription(), capacity.getTechnologyIds().size());
 
     }
 }

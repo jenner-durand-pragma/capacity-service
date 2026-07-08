@@ -33,8 +33,8 @@ class CapacityPersistenceAdapterTest {
         );
 
         capacity = Capacity.builder()
-                .name("Spring Boot")
-                .description("It's a Java framework")
+                .name("Backend developer")
+                .description("It's a good capacity")
                 .build();
 
         capacityEntityRepository.deleteAll().block();

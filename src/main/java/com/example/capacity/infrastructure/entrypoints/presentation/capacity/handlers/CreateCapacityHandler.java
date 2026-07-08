@@ -43,7 +43,7 @@ public class CreateCapacityHandler implements IRouteHandler {
     )
     @ApiResponse(responseCode = "200", description = "Capacity registered successfully",
             content = @Content(schema = @Schema(implementation = CapacityDto.class)))
-    @ApiResponse(responseCode = "409", description = "Conflict error",
+    @ApiResponse(responseCode = "404", description = "Technology not found",
             content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
     @ApiResponse(responseCode = "422", description = "Business rule error or validation error",
             content = @Content(schema = @Schema(implementation = ErrorResponseDTO.class)))
