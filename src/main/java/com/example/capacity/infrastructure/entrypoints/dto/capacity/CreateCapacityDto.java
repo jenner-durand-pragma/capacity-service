@@ -8,11 +8,11 @@ import java.util.List;
 
 @Schema(description = "Necessary fields to create a new capacity")
 public record CreateCapacityDto(
-        @Schema(description = "Name of the capacity", example = "Spring boot")
+        @Schema(description = "Name of the capacity", example = "Backend Developer")
         @NotBlank(message = "Name must have value")
         String name,
 
-        @Schema(description = "Description of the capacity", example = "It's a Java framework")
+        @Schema(description = "Description of the capacity", example = "It's a good capacity")
         @NotBlank(message = "Description must have value")
         String description,
 

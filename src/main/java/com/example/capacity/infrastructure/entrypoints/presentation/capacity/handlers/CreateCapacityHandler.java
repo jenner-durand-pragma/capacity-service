@@ -1,10 +1,9 @@
 package com.example.capacity.infrastructure.entrypoints.presentation.capacity.handlers;
 
 import com.example.capacity.domain.api.ICapacityServicePort;
-import com.example.capacity.domain.exceptions.BusinessRuleException;
-import com.example.capacity.infrastructure.entrypoints.dto.common.ErrorResponseDTO;
-import com.example.capacity.infrastructure.entrypoints.dto.capacity.CreateCapacityDto;
 import com.example.capacity.infrastructure.entrypoints.dto.capacity.CapacityDto;
+import com.example.capacity.infrastructure.entrypoints.dto.capacity.CreateCapacityDto;
+import com.example.capacity.infrastructure.entrypoints.dto.common.ErrorResponseDTO;
 import com.example.capacity.infrastructure.entrypoints.exception.common.BodyRequiredException;
 import com.example.capacity.infrastructure.entrypoints.handler.IRouteHandler;
 import com.example.capacity.infrastructure.entrypoints.mapper.ICapacityDtoMapper;

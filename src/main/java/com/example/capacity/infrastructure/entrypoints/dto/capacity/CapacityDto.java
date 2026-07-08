@@ -9,10 +9,10 @@ public record CapacityDto(
         @Schema(description = "ID of the capacity", example = "10")
         Long id,
 
-        @Schema(description = "Name of the capacity", example = "Spring boot")
+        @Schema(description = "Name of the capacity", example = "Backend Developer")
         String name,
 
-        @Schema(description = "Description of the capacity", example = "It's a Java framework")
+        @Schema(description = "Description of the capacity", example = "It's a good capacity")
         String description,
 
         @Schema(description = "Ids of associated technologies")

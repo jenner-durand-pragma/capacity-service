@@ -1,0 +1,3 @@
+technology-service:
+  base-url: "localhost"
+  timeout: "1000"

@@ -2,6 +2,7 @@ package com.example.capacity.infrastructure.adapters.technologyservice;
 
 import com.example.capacity.domain.model.Capacity;
 import com.example.capacity.domain.spi.ITechnologyExternalPort;
+import com.example.capacity.infrastructure.adapters.technologyservice.dto.AssociateCapacityWithTechnologiesRequestDto;
 import com.example.capacity.infrastructure.adapters.technologyservice.dto.common.ErrorResponseDTO;
 import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyNotFoundException;
 import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceBusinessException;
@@ -13,7 +14,6 @@ import io.github.resilience4j.reactor.retry.RetryOperator;
 import io.github.resilience4j.retry.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,13 +23,8 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class TechnologyServiceConsumerAdapter implements ITechnologyExternalPort {
 
-    @Qualifier("technologyWebClient")
     private final WebClient webClient;
-
-    @Qualifier("technologyServiceRetry")
     private final Retry retry;
-
-    @Qualifier("technologyServiceBulkhead")
     private final Bulkhead bulkhead;
 
     @Override
@@ -37,7 +32,7 @@ public class TechnologyServiceConsumerAdapter implements ITechnologyExternalPort
     public Mono<Void> assignTechnologiesToCapacity(Capacity capacity) {
         return webClient.post()
                 .uri("/api/capacities/technologies")
-                .bodyValue(capacity)
+                .bodyValue(AssociateCapacityWithTechnologiesRequestDto.fromCapacity(capacity))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response ->
                         response.bodyToMono(ErrorResponseDTO.class)
