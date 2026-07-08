@@ -23,6 +23,10 @@ public class CapacityUseCase implements ICapacityServicePort {
                 .flatMap(c -> technologyPersistencePort
                         .assignTechnologiesToCapacity(c)
                         .thenReturn(c)
-                );
+                ).map(c -> {
+                    c.setTechnologyIds(capacity.getTechnologyIds());
+
+                    return c;
+                });
     }
 }
