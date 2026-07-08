@@ -3,6 +3,7 @@ package com.example.capacity.infrastructure.adapters.technologyservice;
 import com.example.capacity.domain.model.Capacity;
 import com.example.capacity.domain.spi.ITechnologyExternalPort;
 import com.example.capacity.infrastructure.adapters.technologyservice.dto.common.ErrorResponseDTO;
+import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyNotFoundException;
 import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceBusinessException;
 import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceUnavailableException;
 import io.github.resilience4j.bulkhead.Bulkhead;
@@ -13,6 +14,7 @@ import io.github.resilience4j.retry.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -40,7 +42,10 @@ public class TechnologyServiceConsumerAdapter implements ITechnologyExternalPort
                 .onStatus(HttpStatusCode::is4xxClientError, response ->
                         response.bodyToMono(ErrorResponseDTO.class)
                                 .flatMap(body -> Mono.error(
-                                        new TechnologyServiceBusinessException(body.message())
+                                        mapClientErrorInAssignTechnologiesToCapacity(
+                                                response.statusCode(),
+                                                body
+                                        )
                                 ))
                 )
                 .onStatus(HttpStatusCode::is5xxServerError, response ->
@@ -52,6 +57,17 @@ public class TechnologyServiceConsumerAdapter implements ITechnologyExternalPort
                 .bodyToMono(Void.class)
                 .transformDeferred(BulkheadOperator.of(bulkhead))
                 .transformDeferred(RetryOperator.of(retry));
+    }
+
+    private RuntimeException mapClientErrorInAssignTechnologiesToCapacity(
+            HttpStatusCode statusCode,
+            ErrorResponseDTO body
+    ) {
+        if (statusCode.value() == HttpStatus.NOT_FOUND.value()) {
+            return new TechnologyNotFoundException(body.message());
+        }
+
+        return new TechnologyServiceBusinessException(body.message());
     }
 
     public Mono<Void> fallbackTechnologyServiceAssignTechnologiesToCapacity(Capacity capacity, Throwable t) {

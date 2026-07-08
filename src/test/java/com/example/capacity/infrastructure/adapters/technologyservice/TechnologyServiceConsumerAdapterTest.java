@@ -1,6 +1,7 @@
 package com.example.capacity.infrastructure.adapters.technologyservice;
 
 import com.example.capacity.domain.model.Capacity;
+import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyNotFoundException;
 import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceBusinessException;
 import com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceUnavailableException;
 import io.github.resilience4j.bulkhead.Bulkhead;
@@ -41,7 +42,10 @@ class TechnologyServiceConsumerAdapterTest {
         var retryConfig = RetryConfig.custom()
                 .maxAttempts(2)
                 .waitDuration(Duration.ofMillis(10))
-                .ignoreExceptions(TechnologyServiceBusinessException.class)
+                .ignoreExceptions(
+                        TechnologyServiceBusinessException.class,
+                        TechnologyNotFoundException.class
+                )
                 .build();
 
         var bulkheadConfig = BulkheadConfig.custom()
@@ -73,8 +77,36 @@ class TechnologyServiceConsumerAdapterTest {
     }
 
     @Test
-    @DisplayName("Should throw TechnologyServiceBusinessException when technology-service returns 4xx")
-    void shouldThrowBusinessExceptionWhenClientError_AssignTechnologiesToCapacity() {
+    @DisplayName("Should throw TechnologyNotFoundException when technology-service returns 404")
+    void shouldThrowNotFoundException_WhenTechnologyNotFound() {
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(404)
+                .setHeader("Content-Type", "application/json")
+                .setBody("""
+                    {
+                        "timestamp": "2026-07-07T00:00:00.000Z",
+                        "path": "/api/capacities/technologies",
+                        "status": 404,
+                        "error": "Not Found",
+                        "requestId": "abc-123",
+                        "message": "The following technology ids were not found: 1, 2, 3"
+                    }
+                    """));
+
+        var capacity = Capacity.builder().id(1L).build();
+
+        StepVerifier.create(adapter.assignTechnologiesToCapacity(capacity))
+                .expectErrorSatisfies(error ->
+                        assertThat(error)
+                                .isInstanceOf(TechnologyNotFoundException.class)
+                                .hasMessage("The following technology ids were not found: 1, 2, 3")
+                )
+                .verify(Duration.ofSeconds(5));
+    }
+
+    @Test
+    @DisplayName("Should throw TechnologyServiceBusinessException when technology-service returns 4xx except 404")
+    void shouldThrowBusinessExceptionWhenClientErrorExcept404_AssignTechnologiesToCapacity() {
         mockWebServer.enqueue(new MockResponse()
                 .setResponseCode(422)
                 .setHeader("Content-Type", "application/json")
@@ -85,7 +117,7 @@ class TechnologyServiceConsumerAdapterTest {
                             "status": 422,
                             "error": "Unprocessable Entity",
                             "requestId": "abc-123",
-                            "message": "Technology ids not found: 1, 2"
+                            "message": "Id of capacity must have a value"
                         }
                         """));
 
@@ -95,7 +127,7 @@ class TechnologyServiceConsumerAdapterTest {
                 .expectErrorSatisfies(error -> {
                     assertThat(error)
                             .isInstanceOf(TechnologyServiceBusinessException.class)
-                            .hasMessage("Technology ids not found: 1, 2");
+                            .hasMessage("Id of capacity must have a value");
                 })
                 .verify();
     }

@@ -57,6 +57,7 @@ resilience4j:
 #          - com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceUnavailableException
         ignore-exceptions:
           - com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyServiceBusinessException
+          - com.example.capacity.infrastructure.adapters.technologyservice.exceptions.TechnologyNotFoundException
   bulkhead:
     configs:
       default:
